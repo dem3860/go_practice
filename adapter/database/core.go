@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 
+	"go_practice/adapter/database/model"
 	"go_practice/config"
 
 	"gorm.io/driver/postgres"
@@ -19,6 +20,9 @@ func NewPostgreSQLDB(cfg *config.Config) (*gorm.DB, error) {
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect postgres: %w", err)
+	}
+	if err := migrate(db); err != nil {
+		return nil , fmt.Errorf("failed to migrate: %w", err)
 	}
 
 	return db, nil
@@ -47,5 +51,12 @@ func buildDSN(cfg *config.Config) string {
 		cfg.DBPassword,
 		cfg.DBName,
 		cfg.DBSSLMode,
+	)
+}
+
+func migrate(db *gorm.DB) error {
+	return db.AutoMigrate(
+		&model.User{},
+		&model.Task{},
 	)
 }

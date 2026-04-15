@@ -1,37 +1,29 @@
 package handler
 
 import (
-	"context"
+	"go_practice/usecase/input_port"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humagin"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
+// 依存関係をまとめる構造体
 type Deps struct {
-	DB *gorm.DB
-
-	UserUseCase UserUseCase
-	TaskUseCase TaskUseCase
+	UserUseCase input_port.IUserUseCase
 }
 
-func NewDeps(db *gorm.DB) *Deps {
+func NewDeps(userUseCase input_port.IUserUseCase) *Deps {
 	return &Deps{
-		DB: db,
+		UserUseCase: userUseCase,
 	}
 }
 
-type UserUseCase interface{}
-type TaskUseCase interface{}
-
 func SetupRouter(router *gin.Engine, deps *Deps) {
-	router.Use(func(c *gin.Context) {
-		c.Set("deps", deps)
-		c.Next()
-	})
-
 	api := humagin.New(router, huma.DefaultConfig("My API", "1.0.0"))
+
+	// ハンドラーの初期化
+	userHandler := NewUserHandler(deps.UserUseCase)
 
 	// OpenAPI ドキュメントにセキュリティスキームを追加
 	api.OpenAPI().Components.SecuritySchemes = map[string]*huma.SecurityScheme{
@@ -40,35 +32,7 @@ func SetupRouter(router *gin.Engine, deps *Deps) {
 			Scheme: "bearer",
 		},
 	}
-
-	huma.Get(api, "/health", func(ctx context.Context, input *struct{}) (*struct {
-		Body struct{} `json:"body"`
-	}, error) {
-		return &struct {
-			Body struct{} `json:"body"`
-		}{}, nil
-	})
-
-	huma.Get(api,"/", func(ctx context.Context, input *struct{}) (*struct {
-		Body string `json:"body"`
-	}, error) {
-		return &struct {
-			Body string `json:"body"`
-		}{Body: "Hello Gin + Huma!"}, nil
-	})
-
-	huma.Get(api, "/doc", func(ctx context.Context, input *struct{}) (*struct {
-		Body interface{} `json:"body"`
-	}, error) {
-		return &struct {
-			Body interface{} `json:"body"`
-		}{Body: api.OpenAPI()}, nil
-	})
-
-	registerUserRoutes(api, deps)
-	registerTaskRoutes(api, deps)
+	
+	huma.Post(api,"/users", userHandler.Create)
 }
 
-func registerUserRoutes(api huma.API, deps *Deps) {}
-
-func registerTaskRoutes(api huma.API, deps *Deps) {}

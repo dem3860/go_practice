@@ -1,0 +1,58 @@
+services:
+  pg:
+    image: postgres:16
+    platform: linux/amd64
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: task_app
+      TZ: Asia/Tokyo
+    volumes:
+      - ./mnt/pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d task_app"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    tty: true
+    env_file:
+      - .env
+    environment:
+      TZ: Asia/Tokyo
+      PORT: 8080
+      DB_HOST: pg
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: task_app
+      DB_SSLMODE: disable
+    depends_on:
+      pg:
+        condition: service_healthy
+    command: air -c .air.toml
+
+  pgweb:
+    image: sosedoff/pgweb
+    platform: linux/amd64
+    ports:
+      - "8081:8081"
+    depends_on:
+      pg:
+        condition: service_healthy
+    command:
+      [
+        "--bind=0.0.0.0",
+        "--listen=8081",
+        "--url=postgres://postgres:postgres@pg:5432/task_app?sslmode=disable",
+      ]

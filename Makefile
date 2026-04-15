@@ -63,6 +63,12 @@ build:
 run:
 	go run main.go
 
+## OpenAPI JSON を生成
+openapi:
+	@echo "Fetching OpenAPI JSON from http://localhost:$(PORT)/openapi.json..."
+	@curl -s http://localhost:$(PORT)/openapi.json | jq . > openapi.json
+	@echo "✓ OpenAPI JSON generated: openapi.json"
+
 # ==============================
 # DB関連
 # ==============================
@@ -94,6 +100,7 @@ help:
 	@echo "make logs        - ログ確認"
 	@echo "make sh          - apiコンテナに入る"
 	@echo "make psql        - DBに入る"
+	@echo "make openapi     - OpenAPI JSON を生成"
 	@echo "make reset-db    - DBリセット（注意）"
 	@echo "make rebuild     - キャッシュなしビルド"
 	@echo "make clean       - 完全削除"

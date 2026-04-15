@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"net/http"
+
 	"go_practice/usecase/input_port"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -32,7 +34,14 @@ func SetupRouter(router *gin.Engine, deps *Deps) {
 			Scheme: "bearer",
 		},
 	}
-	
-	huma.Post(api,"/users", userHandler.Create)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "create-user",
+		Method:      http.MethodPost,
+		Path:        "/users",
+		Summary:     "Create a new user",
+		Description: "Create a new user account with email and password.",
+		Tags:        []string{"Users"},
+	}, userHandler.Create)
 }
 

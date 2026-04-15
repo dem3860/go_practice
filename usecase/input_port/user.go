@@ -6,8 +6,9 @@ type UserCreate struct {
 	Email    string
 	Password string
 	Name     string
+	Role     string
 }
 
 type IUserUseCase interface {
-	Create(input UserCreate) (entity.User,error)
+	Create(input UserCreate) (entity.User, error)
 }

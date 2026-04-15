@@ -3,12 +3,12 @@ package interactor
 import "errors"
 
 var ErrKind struct {
-	NotFound   error
-	Conflict   error
-	BadRequest error
-	Validation error
-	DB    error
-	Hash error
+	NotFound            error
+	Conflict            error
+	BadRequest          error
+	Validation          error
+	DB                  error
+	Hash                error
 	InternalServerError error
 }
 

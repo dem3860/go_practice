@@ -22,7 +22,7 @@ func (r *UserRepository) FindByID(userID string) (_ entity.User, err error) {
 	var user model.User
 	err = r.db.Where("id = ?", userID).First(&user).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return entity.User{}, fmt.Errorf("%w: user not found",interactor.ErrKind.NotFound)
+		return entity.User{}, fmt.Errorf("%w: user not found", interactor.ErrKind.NotFound)
 	}
 	if err != nil {
 		return entity.User{}, fmt.Errorf("%w: failed to find user by ID: %v", interactor.ErrKind.DB, err)
@@ -35,7 +35,7 @@ func (r *UserRepository) FindByEmail(email string) (_ entity.User, err error) {
 	var user model.User
 	err = r.db.Where("email = ?", email).First(&user).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return entity.User{}, fmt.Errorf("%w: user not found",interactor.ErrKind.NotFound)
+		return entity.User{}, fmt.Errorf("%w: user not found", interactor.ErrKind.NotFound)
 	}
 	if err != nil {
 		return entity.User{}, fmt.Errorf("%w: failed to find user by email: %v", interactor.ErrKind.DB, err)

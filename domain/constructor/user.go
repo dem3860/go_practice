@@ -6,10 +6,11 @@ import (
 )
 
 type NewUserCreateArgs struct {
-	ID                   string
-	Name					 string
-	Email                    string
-	Password                 string
+	ID       string
+	Name     string
+	Role     string
+	Email    string
+	Password string
 }
 
 func NewUserCreate(arg NewUserCreateArgs) (entity.User, error) {
@@ -22,8 +23,9 @@ func NewUserCreate(arg NewUserCreateArgs) (entity.User, error) {
 	}
 
 	return entity.User{
-		ID:   arg.ID,
+		ID:       arg.ID,
 		Name:     arg.Name,
+		Role:     entity.UserRole(arg.Role),
 		Email:    arg.Email,
 		Password: arg.Password,
 	}, nil

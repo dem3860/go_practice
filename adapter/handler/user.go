@@ -26,6 +26,7 @@ func (h *UserHandler) Create(ctx context.Context, input *schema.CreateUserReq) (
 		Email:    input.Body.Email,
 		Password: input.Body.Password,
 		Name:     input.Body.Name,
+		Role:     input.Body.Role,
 	}
 
 	res, err := h.UserUC.Create(uc)

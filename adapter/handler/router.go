@@ -44,4 +44,3 @@ func SetupRouter(router *gin.Engine, deps *Deps) {
 		Tags:        []string{"Users"},
 	}, userHandler.Create)
 }
-

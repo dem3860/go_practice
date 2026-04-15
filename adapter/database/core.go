@@ -22,7 +22,7 @@ func NewPostgreSQLDB(cfg *config.Config) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to connect postgres: %w", err)
 	}
 	if err := migrate(db); err != nil {
-		return nil , fmt.Errorf("failed to migrate: %w", err)
+		return nil, fmt.Errorf("failed to migrate: %w", err)
 	}
 
 	return db, nil

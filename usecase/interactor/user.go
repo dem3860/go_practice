@@ -49,6 +49,7 @@ func (uc *UserUseCase) Create(input input_port.UserCreate) (entity.User, error) 
 	user, err := constructor.NewUserCreate(constructor.NewUserCreateArgs{
 		ID:       userId,
 		Name:     input.Name,
+		Role:     input.Role,
 		Email:    input.Email,
 		Password: string(hashedPassword),
 	})

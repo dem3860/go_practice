@@ -36,6 +36,15 @@ func SetupRouter(router *gin.Engine, deps *Deps) {
 	}
 
 	huma.Register(api, huma.Operation{
+		OperationID: "login",
+		Method:      http.MethodPost,
+		Path:        "/login",
+		Summary:     "Login",
+		Description: "Login with email and password.",
+		Tags:        []string{"Users"},
+	}, userHandler.Login)
+
+	huma.Register(api, huma.Operation{
 		OperationID: "create-user",
 		Method:      http.MethodPost,
 		Path:        "/users",
@@ -43,4 +52,5 @@ func SetupRouter(router *gin.Engine, deps *Deps) {
 		Description: "Create a new user account with email and password.",
 		Tags:        []string{"Users"},
 	}, userHandler.Create)
+
 }

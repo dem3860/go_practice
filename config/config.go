@@ -5,8 +5,14 @@ import (
 )
 
 type Config struct {
+	// サーバー設定
 	Port int `env:"PORT" envDefault:"8080"`
 
+	// JWT設定
+	JWTSecret string `env:"JWT_SECRET" envDefault:"mysecretkey"`
+	JWTExpire int    `env:"JWT_EXPIRE" envDefault:"3600"`
+
+	// データベース設定
 	DBHost     string `env:"DB_HOST" envDefault:"localhost"`
 	DBPort     int    `env:"DB_PORT" envDefault:"5432"`
 	DBUser     string `env:"DB_USER" envDefault:"postgres"`

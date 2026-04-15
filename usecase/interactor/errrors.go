@@ -10,6 +10,7 @@ var ErrKind struct {
 	DB                  error
 	Hash                error
 	InternalServerError error
+	Unauthorized        error
 }
 
 func init() {
@@ -20,4 +21,5 @@ func init() {
 	ErrKind.DB = errors.New("database error")
 	ErrKind.Hash = errors.New("hashing error")
 	ErrKind.InternalServerError = errors.New("internal server error")
+	ErrKind.Unauthorized = errors.New("unauthorized error")
 }

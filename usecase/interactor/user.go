@@ -14,12 +14,39 @@ import (
 
 type UserUseCase struct {
 	userRepository output_port.UserRepository
+	tokenProvider  output_port.TokenProvider
 }
 
-func NewUserUseCase(userRepo output_port.UserRepository) *UserUseCase {
+func NewUserUseCase(userRepo output_port.UserRepository, tokenProvider output_port.TokenProvider) *UserUseCase {
 	return &UserUseCase{
 		userRepository: userRepo,
+		tokenProvider:  tokenProvider,
 	}
+}
+
+func (uc *UserUseCase) Login(email, password string) (entity.User, string, error) {
+	// メールアドレスでユーザーを検索
+	user, err := uc.userRepository.FindByEmail(email)
+	fmt.Println("UserUseCase.Login: Found user:", user)
+	if err != nil {
+		if errors.Is(err, ErrKind.NotFound) {
+			return entity.User{}, "", fmt.Errorf("%w: invalid email or password", ErrKind.Unauthorized)
+		}
+		return entity.User{}, "", err
+	}
+
+	// パスワードを比較
+	if err := user.ComparePassword(password); err != nil {
+		return entity.User{}, "", fmt.Errorf("%w: invalid email or password", ErrKind.Unauthorized)
+	}
+
+	// トークンを生成
+	token, err := uc.tokenProvider.GenerateToken(user)
+	if err != nil {
+		return entity.User{}, "", fmt.Errorf("%w: failed to generate token", ErrKind.InternalServerError)
+	}
+
+	return user, token, nil
 }
 
 func (uc *UserUseCase) Create(input input_port.UserCreate) (entity.User, error) {

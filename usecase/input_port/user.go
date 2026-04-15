@@ -11,4 +11,5 @@ type UserCreate struct {
 
 type IUserUseCase interface {
 	Create(input UserCreate) (entity.User, error)
+	Login(email, password string) (entity.User, string, error)
 }

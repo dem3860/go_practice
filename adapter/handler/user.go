@@ -21,6 +21,27 @@ func NewUserHandler(userUC input_port.IUserUseCase) *UserHandler {
 	}
 }
 
+func (h *UserHandler) Login(ctx context.Context, input *schema.LoginReq) (*schema.LoginRes, error) {
+	user, token, err := h.UserUC.Login(input.Body.Email, input.Body.Password)
+	if err != nil {
+		switch {
+		case errors.Is(err, interactor.ErrKind.BadRequest):
+			return nil, huma.Error400BadRequest("invalid email or password", err)
+
+		case errors.Is(err, interactor.ErrKind.NotFound):
+			return nil, huma.Error404NotFound("user not found", err)
+
+		case errors.Is(err, interactor.ErrKind.InternalServerError):
+			return nil, huma.Error500InternalServerError("internal server error", err)
+
+		default:
+			return nil, huma.Error500InternalServerError("internal server error", err)
+		}
+	}
+
+	return schema.ToLoginResponse(user, token), nil
+}
+
 func (h *UserHandler) Create(ctx context.Context, input *schema.CreateUserReq) (*schema.CreateUserRes, error) {
 	uc := input_port.UserCreate{
 		Email:    input.Body.Email,

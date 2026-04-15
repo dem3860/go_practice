@@ -1,12 +1,14 @@
 package main
 
 import (
+	"go_practice/adapter/auth"
 	"go_practice/adapter/database/repository"
 	"go_practice/adapter/handler"
 	"go_practice/common"
 	"go_practice/config"
 	"go_practice/usecase/interactor"
 	"log"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -33,7 +35,8 @@ func NewApp() (*App, error) {
 
 	// レポジトリとユースケースのDI
 	userRepo := repository.NewUserRepository(db)
-	userUC := interactor.NewUserUseCase(userRepo)
+	tokenProvider := auth.NewJWTProvider(cfg.JWTSecret, time.Duration(cfg.JWTExpire)*time.Second)
+	userUC := interactor.NewUserUseCase(userRepo, tokenProvider)
 
 	deps := handler.NewDeps(userUC)
 

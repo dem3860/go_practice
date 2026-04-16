@@ -3,21 +3,21 @@ package interactor
 import (
 	"errors"
 	"fmt"
-	"go_practice/domain/constructor"
 	"go_practice/domain/entity"
-	"go_practice/usecase/input_port"
-	"go_practice/usecase/output_port"
+	"go_practice/domain/factory"
+	"go_practice/usecase/port/input"
+	"go_practice/usecase/port/output"
 	"go_practice/utils"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthUseCase struct {
-	userRepository output_port.UserRepository
-	tokenProvider  output_port.TokenProvider
+	userRepository output.UserRepository
+	tokenProvider  output.TokenProvider
 }
 
-func NewAuthUseCase(userRepo output_port.UserRepository, tokenProvider output_port.TokenProvider) *AuthUseCase {
+func NewAuthUseCase(userRepo output.UserRepository, tokenProvider output.TokenProvider) *AuthUseCase {
 	return &AuthUseCase{
 		userRepository: userRepo,
 		tokenProvider:  tokenProvider,
@@ -49,7 +49,16 @@ func (uc *AuthUseCase) Login(email, password string) (entity.User, string, error
 	return user, token, nil
 }
 
-func (uc *AuthUseCase) Signup(input input_port.SignupInput) (entity.User, error) {
+func (uc *AuthUseCase) Authenticate(token string) (string, error) {
+	userID, err := uc.tokenProvider.ValidateToken(token)
+	if err != nil {
+		return "", fmt.Errorf("%w: invalid token", ErrKind.Unauthorized)
+	}
+
+	return userID, nil
+}
+
+func (uc *AuthUseCase) Signup(input input.SignupInput) (entity.User, error) {
 	// メールアドレスの重複確認
 	_, err := uc.userRepository.FindByEmail(input.Email)
 	if err == nil {
@@ -73,7 +82,7 @@ func (uc *AuthUseCase) Signup(input input_port.SignupInput) (entity.User, error)
 	}
 
 	// バリデーションを行ってユーザーエンティティを生成
-	user, err := constructor.NewUserCreate(constructor.NewUserCreateArgs{
+	user, err := factory.NewUser(factory.NewUserArgs{
 		ID:       userId,
 		Name:     input.Name,
 		Role:     string(entity.RoleUser),

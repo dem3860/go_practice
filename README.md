@@ -14,23 +14,28 @@ Goの学習用プロジェクト
 
 ## プロジェクト構成
 
-```
+```text
 go_practice/
-├── adapter/              # アダプタ層（外部とのインテグレーション）
-│   ├── database/        # データベース関連
+├── adapter/
+│   ├── auth/            # JWT など外部認証実装
+│   ├── database/
 │   │   ├── core.go      # DB接続
 │   │   ├── model/       # DBモデル
-│   │   └── repository/  # リポジトリ実装
-│   ├── handler/         # HTTPハンドラー
-│   └── schema/          # HTTPリクエスト/レスポンススキーマ
-├── domain/              # ビジネスロジック層
+│   │   └── repository/  # Repository実装
+│   └── http/
+│       ├── handler/     # HTTPハンドラー
+│       ├── middleware/  # HTTPミドルウェア
+│       ├── schema/      # HTTPリクエスト/レスポンス
+│       └── router.go    # ルーティング設定
+├── domain/
 │   ├── entity/          # ドメインエンティティ
-│   ├── constructor/     # エンティティ生成ロジック
-│   └── validation/      # ビジネスルール検証
-├── usecase/             # ユースケース層
-│   ├── input_port/      # 入力インターフェース
-│   ├── output_port/     # 出力インターフェース
-│   └── interactor/      # ユースケース実装
+│   ├── factory/         # エンティティ生成ロジック
+│   └── validation/      # ドメインバリデーション
+├── usecase/
+│   ├── interactor/      # ユースケース実装
+│   └── port/
+│       ├── input/       # 入力ポート
+│       └── output/      # 出力ポート
 ├── config/              # 設定管理
 ├── common/              # 共通ユーティリティ
 └── utils/               # ヘルパー関数

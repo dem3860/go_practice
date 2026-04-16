@@ -3,7 +3,7 @@ package main
 import (
 	"go_practice/adapter/auth"
 	"go_practice/adapter/database/repository"
-	"go_practice/adapter/handler"
+	httpadapter "go_practice/adapter/http"
 	"go_practice/common"
 	"go_practice/config"
 	"go_practice/usecase/interactor"
@@ -37,11 +37,12 @@ func NewApp() (*App, error) {
 	userRepo := repository.NewUserRepository(db)
 	tokenProvider := auth.NewJWTProvider(cfg.JWTSecret, time.Duration(cfg.JWTExpire)*time.Second)
 	authUC := interactor.NewAuthUseCase(userRepo, tokenProvider)
+	userUC := interactor.NewUserUseCase(userRepo)
 
-	deps := handler.NewDeps(authUC)
+	deps := httpadapter.NewDeps(authUC, userUC)
 
 	router := gin.Default()
-	handler.SetupRouter(router, deps)
+	httpadapter.SetupRouter(router, deps)
 
 	return &App{
 		Config: cfg,

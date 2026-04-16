@@ -15,6 +15,7 @@ import (
 
 type authUserContextKey string
 
+// contextに認証済みユーザを保存、取得する
 const authUserKey authUserContextKey = "auth_user"
 
 type AuthMiddleware struct {
@@ -32,12 +33,14 @@ func NewAuthMiddleware(api huma.API, authUC input.IAuthUseCase, userUC input.IUs
 }
 
 func (m *AuthMiddleware) Authenticate(ctx huma.Context, next func(huma.Context)) {
+	// Authorizationヘッダーからtokenを抽出する
 	token, err := bearerToken(ctx.Header("Authorization"))
 	if err != nil {
 		_ = huma.WriteErr(m.api, ctx, 401, "missing or invalid bearer token", err)
 		return
 	}
 
+	// tokenが検証され、userIDを返ってくる
 	userID, err := m.authUC.Authenticate(token)
 	if err != nil {
 		_ = huma.WriteErr(m.api, ctx, 401, "invalid or expired token", err)
@@ -56,6 +59,7 @@ func (m *AuthMiddleware) Authenticate(ctx huma.Context, next func(huma.Context))
 		return
 	}
 
+	// contextにuserを入れ、新しいctxを渡す
 	next(SetAuthenticatedUser(ctx, user))
 }
 
@@ -65,6 +69,7 @@ func (m *AuthMiddleware) RequireAdmin(ctx huma.Context, next func(huma.Context))
 		_ = huma.WriteErr(m.api, ctx, 401, "authentication required", err)
 		return
 	}
+	// userのロールがadminかどうかを検証する
 	if user.Role != entity.RoleAdmin {
 		_ = huma.WriteErr(m.api, ctx, 403, "admin role required")
 		return
@@ -78,7 +83,9 @@ func SetAuthenticatedUser(ctx huma.Context, user entity.User) huma.Context {
 }
 
 func GetAuthenticatedUser(ctx context.Context) (entity.User, error) {
+	// contextからuserを抽出
 	value := ctx.Value(authUserKey)
+	// 検証
 	user, ok := value.(entity.User)
 	if !ok {
 		return entity.User{}, fmt.Errorf("authenticated user not found in context")

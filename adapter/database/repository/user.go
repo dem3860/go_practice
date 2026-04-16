@@ -6,6 +6,8 @@ import (
 	"go_practice/adapter/database/model"
 	"go_practice/domain/entity"
 	"go_practice/usecase/interactor"
+	outputport "go_practice/usecase/port/output"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -55,4 +57,50 @@ func (r *UserRepository) Create(user entity.User) error {
 		return fmt.Errorf("%w: failed to create user: %v", interactor.ErrKind.DB, err)
 	}
 	return nil
+}
+
+func (r *UserRepository) Search(query outputport.UserSearch) (_ []entity.User, total int, nextPage *int, err error) {
+	db := r.db.Model(&model.User{})
+
+	if query.Q != "" {
+		keyword := "%" + strings.ToLower(query.Q) + "%"
+		db = db.Where("LOWER(name) LIKE ? OR LOWER(email) LIKE ?", keyword, keyword)
+	}
+	if query.UserType != "" {
+		db = db.Where("role = ?", query.UserType)
+	}
+
+	var count int64
+	if err := db.Count(&count).Error; err != nil {
+		return nil, 0, nil, fmt.Errorf("%w: failed to count users: %v", interactor.ErrKind.DB, err)
+	}
+	total = int(count)
+
+	orderByMap := map[string]string{
+		"createdAt": "created",
+		"name":      "name",
+		"email":     "email",
+		"role":      "role",
+	}
+
+	offset := (query.Page - 1) * query.Take
+	var users []model.User
+	if err := db.Order(orderByMap[query.OrderBy] + " " + query.Order).
+		Limit(query.Take).
+		Offset(offset).
+		Find(&users).Error; err != nil {
+		return nil, 0, nil, fmt.Errorf("%w: failed to search users: %v", interactor.ErrKind.DB, err)
+	}
+
+	result := make([]entity.User, 0, len(users))
+	for _, user := range users {
+		result = append(result, user.ToEntity())
+	}
+
+	if query.Page*query.Take < total {
+		page := query.Page + 1
+		nextPage = &page
+	}
+
+	return result, total, nextPage, nil
 }

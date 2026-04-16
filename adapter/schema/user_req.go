@@ -9,13 +9,12 @@ type LoginReq struct {
 	Body LoginReqBody
 }
 
-type CreateUserReqBody struct {
+type SignupReqBody struct {
 	Name     string `json:"name" maxLength:"50" example:"John Doe" doc:"user's full name"`
-	Role     string `json:"role" example:"user" doc:"user's role"`
 	Email    string `json:"email" format:"email" example:"john.doe@example.com" doc:"user's email address"`
 	Password string `json:"password" minLength:"8" example:"password123" doc:"user's password"`
 }
 
-type CreateUserReq struct {
-	Body CreateUserReqBody
+type SignupReq struct {
+	Body SignupReqBody
 }

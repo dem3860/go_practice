@@ -36,20 +36,20 @@ func ToLoginResponse(user entity.User, accessToken string) *LoginRes {
 	}
 }
 
-type CreateUserResBody struct {
+type SignupResBody struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	Role  string `json:"role"`
 }
 
-type CreateUserRes struct {
-	Body CreateUserResBody
+type SignupRes struct {
+	Body SignupResBody
 }
 
-func ToCreateUserResponse(user entity.User) *CreateUserRes {
-	return &CreateUserRes{
-		Body: CreateUserResBody{
+func ToSignupResponse(user entity.User) *SignupRes {
+	return &SignupRes{
+		Body: SignupResBody{
 			ID:    user.ID,
 			Name:  user.Name,
 			Role:  string(user.Role),

@@ -36,9 +36,9 @@ func NewApp() (*App, error) {
 	// レポジトリとユースケースのDI
 	userRepo := repository.NewUserRepository(db)
 	tokenProvider := auth.NewJWTProvider(cfg.JWTSecret, time.Duration(cfg.JWTExpire)*time.Second)
-	userUC := interactor.NewUserUseCase(userRepo, tokenProvider)
+	authUC := interactor.NewAuthUseCase(userRepo, tokenProvider)
 
-	deps := handler.NewDeps(userUC)
+	deps := handler.NewDeps(authUC)
 
 	router := gin.Default()
 	handler.SetupRouter(router, deps)

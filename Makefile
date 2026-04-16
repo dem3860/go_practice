@@ -78,6 +78,13 @@ reset-db:
 	$(DC) down -v
 	$(DC) up -d
 
+## DBデータを完全削除（bind mount含む）
+wipe-db:
+	$(DC) down
+	rm -rf ./mnt/pgdata
+	mkdir -p ./mnt/pgdata
+	$(DC) up -d
+
 # ==============================
 # 開発補助
 # ==============================
@@ -102,5 +109,6 @@ help:
 	@echo "make psql        - DBに入る"
 	@echo "make openapi     - OpenAPI JSON を生成"
 	@echo "make reset-db    - DBリセット（注意）"
+	@echo "make wipe-db     - DBデータを完全削除（注意）"
 	@echo "make rebuild     - キャッシュなしビルド"
 	@echo "make clean       - 完全削除"

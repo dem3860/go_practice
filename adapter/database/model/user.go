@@ -23,10 +23,12 @@ func (User) TableName() string {
 
 func (u User) ToEntity() entity.User {
 	return entity.User{
-		ID:       u.ID,
-		Name:     u.Name,
-		Email:    u.Email,
-		Password: u.Password,
-		Role:     entity.UserRole(u.Role),
+		ID:        u.ID,
+		Name:      u.Name,
+		Email:     u.Email,
+		Password:  u.Password,
+		Role:      entity.UserRole(u.Role),
+		CreatedAt: u.CreatedAt,
+		UpdatedAt: u.UpdatedAt,
 	}
 }

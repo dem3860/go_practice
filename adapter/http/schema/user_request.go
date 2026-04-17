@@ -37,3 +37,11 @@ func firstNonEmpty(value, fallback string) string {
 
 	return value
 }
+
+type UpdateByMeReqBody struct {
+	Name string `json:"name" maxLength:"50" example:"John Doe" doc:"user's full name"`
+}
+
+type UpdateByMeReq struct {
+	Body UpdateByMeReqBody
+}

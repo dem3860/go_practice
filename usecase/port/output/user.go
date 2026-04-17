@@ -13,6 +13,7 @@ type UserSearch struct {
 
 type UserRepository interface {
 	Create(entity.User) error
+	Update(entity.User) error
 	FindByID(userID string) (entity.User, error)
 	FindByEmail(email string) (entity.User, error)
 	Search(query UserSearch) ([]entity.User, int, *int, error)

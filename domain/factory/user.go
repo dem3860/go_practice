@@ -14,7 +14,12 @@ type NewUserArgs struct {
 }
 
 func NewUser(arg NewUserArgs) (entity.User, error) {
-	err := validation.ValidateEmail(arg.Email, false)
+	err := validation.ValidateName(arg.Name)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	err = validation.ValidateEmail(arg.Email, false)
 	if err != nil {
 		return entity.User{}, err
 	}

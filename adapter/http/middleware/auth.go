@@ -1,22 +1,17 @@
 package middleware
 
 import (
-	"context"
 	"errors"
-	"fmt"
 	"strings"
 
+	"go_practice/adapter/http/authctx"
 	"go_practice/domain/entity"
 	"go_practice/usecase/interactor"
 	"go_practice/usecase/port/input"
 
+	"fmt"
 	"github.com/danielgtaylor/huma/v2"
 )
-
-type authUserContextKey string
-
-// contextに認証済みユーザを保存、取得する
-const authUserKey authUserContextKey = "auth_user"
 
 type AuthMiddleware struct {
 	api    huma.API
@@ -60,11 +55,11 @@ func (m *AuthMiddleware) Authenticate(ctx huma.Context, next func(huma.Context))
 	}
 
 	// contextにuserを入れ、新しいctxを渡す
-	next(SetAuthenticatedUser(ctx, user))
+	next(authctx.SetAuthenticatedUser(ctx, user))
 }
 
 func (m *AuthMiddleware) RequireAdmin(ctx huma.Context, next func(huma.Context)) {
-	user, err := GetAuthenticatedUser(ctx.Context())
+	user, err := authctx.GetAuthenticatedUser(ctx.Context())
 	if err != nil {
 		_ = huma.WriteErr(m.api, ctx, 401, "authentication required", err)
 		return
@@ -76,22 +71,6 @@ func (m *AuthMiddleware) RequireAdmin(ctx huma.Context, next func(huma.Context))
 	}
 
 	next(ctx)
-}
-
-func SetAuthenticatedUser(ctx huma.Context, user entity.User) huma.Context {
-	return huma.WithValue(ctx, authUserKey, user)
-}
-
-func GetAuthenticatedUser(ctx context.Context) (entity.User, error) {
-	// contextからuserを抽出
-	value := ctx.Value(authUserKey)
-	// 検証
-	user, ok := value.(entity.User)
-	if !ok {
-		return entity.User{}, fmt.Errorf("authenticated user not found in context")
-	}
-
-	return user, nil
 }
 
 func bearerToken(header string) (string, error) {

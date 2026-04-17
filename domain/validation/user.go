@@ -24,6 +24,20 @@ func IsValidationError(err error) bool {
 	return errors.As(err, &target)
 }
 
+func ValidateName(name string) error {
+	name = strings.TrimSpace(name)
+
+	if name == "" {
+		return NewValidationError("name is required")
+	}
+
+	if utf8.RuneCountInString(name) > 50 {
+		return NewValidationError("name must be 50 characters or fewer")
+	}
+
+	return nil
+}
+
 func ValidateEmail(email string, allowEmpty bool) error {
 	email = strings.TrimSpace(email)
 

@@ -35,12 +35,13 @@ func SetupRouter(router *gin.Engine, deps *Deps) {
 	// OpenAPI ドキュメントにセキュリティスキームを追加
 	api.OpenAPI().Components.SecuritySchemes = map[string]*huma.SecurityScheme{
 		"Bearer": {
-			Type:   "http",
-			Scheme: "bearer",
+			Type:         "http",
+			Scheme:       "bearer",
 			BearerFormat: "JWT",
 		},
 	}
 
+	// ログイン
 	huma.Register(api, huma.Operation{
 		OperationID: "login",
 		Method:      http.MethodPost,
@@ -50,6 +51,7 @@ func SetupRouter(router *gin.Engine, deps *Deps) {
 		Tags:        []string{"Auth"},
 	}, authHandler.Login)
 
+	// サインアップ
 	huma.Register(api, huma.Operation{
 		OperationID: "signup",
 		Method:      http.MethodPost,
@@ -59,7 +61,20 @@ func SetupRouter(router *gin.Engine, deps *Deps) {
 		Tags:        []string{"Auth"},
 	}, authHandler.Signup)
 
-	//
+	// 自分のユーザ情報更新
+	huma.Register(api, huma.Operation{
+		OperationID: "update-my-user",
+		Method:      http.MethodPatch,
+		Path:        "/me",
+		Summary:     "Update my profile",
+		Description: "Update the authenticated user's profile.",
+		Tags:        []string{"Users"},
+		Security:    []map[string][]string{{"Bearer": {}}},
+		Middlewares: huma.Middlewares{
+			authMiddleware.Authenticate,
+		},
+	}, userHandler.UpdateByMe)
+	// ユーザ一覧
 	huma.Register(api, huma.Operation{
 		OperationID: "list-users",
 		Method:      http.MethodGet,

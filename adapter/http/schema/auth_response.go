@@ -1,13 +1,9 @@
 package schema
 
-import "go_practice/domain/entity"
-
-type UserResBody struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Role  string `json:"role"`
-	Email string `json:"email"`
-}
+import (
+	"go_practice/domain/entity"
+	"time"
+)
 
 const TokenType = "Bearer"
 
@@ -26,21 +22,18 @@ func ToLoginResponse(user entity.User, accessToken string) *LoginRes {
 		Body: LoginResBody{
 			AccessToken: accessToken,
 			TokenType:   "Bearer",
-			User: UserResBody{
-				ID:    user.ID,
-				Name:  user.Name,
-				Role:  string(user.Role),
-				Email: user.Email,
-			},
+			User:        toUserResBody(user),
 		},
 	}
 }
 
 type SignupResBody struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Role  string `json:"role"`
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Role      string    `json:"role"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 type SignupRes struct {
@@ -50,10 +43,12 @@ type SignupRes struct {
 func ToSignupResponse(user entity.User) *SignupRes {
 	return &SignupRes{
 		Body: SignupResBody{
-			ID:    user.ID,
-			Name:  user.Name,
-			Role:  string(user.Role),
-			Email: user.Email,
+			ID:        user.ID,
+			Name:      user.Name,
+			Role:      string(user.Role),
+			Email:     user.Email,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
 		},
 	}
 }

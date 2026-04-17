@@ -59,6 +59,19 @@ func (r *UserRepository) Create(user entity.User) error {
 	return nil
 }
 
+func (r *UserRepository) Update(user entity.User) error {
+	if err := r.db.Model(&model.User{}).
+		Where("id = ?", user.ID).
+		Updates(map[string]interface{}{
+			"name":  user.Name,
+			"email": user.Email,
+			"role":  string(user.Role),
+		}).Error; err != nil {
+		return fmt.Errorf("%w: failed to update user: %v", interactor.ErrKind.DB, err)
+	}
+	return nil
+}
+
 func (r *UserRepository) Search(query outputport.UserSearch) (_ []entity.User, total int, nextPage *int, err error) {
 	db := r.db.Model(&model.User{})
 

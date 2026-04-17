@@ -1,7 +1,10 @@
 package interactor
 
 import (
+	"errors"
+	"fmt"
 	"go_practice/domain/entity"
+	"go_practice/domain/validation"
 	inputport "go_practice/usecase/port/input"
 	outputport "go_practice/usecase/port/output"
 )
@@ -18,6 +21,33 @@ func NewUserUseCase(userRepo outputport.UserRepository) *UserUseCase {
 
 func (uc *UserUseCase) FindByID(userID string) (entity.User, error) {
 	return uc.userRepository.FindByID(userID)
+}
+
+func (uc *UserUseCase) UpdateByMe(input inputport.UpdateByMeInput) (entity.User, error) {
+	user, err := uc.userRepository.FindByID(input.ID)
+	if err != nil {
+		if errors.Is(err, ErrKind.NotFound) {
+			return entity.User{}, fmt.Errorf("%w: user not found", ErrKind.NotFound)
+		}
+		return entity.User{}, err
+	}
+
+	if err := validation.ValidateName(input.Name); err != nil {
+		return entity.User{}, fmt.Errorf("%w: %v", ErrKind.Validation, err)
+	}
+
+	user.Name = input.Name
+
+	if err := uc.userRepository.Update(user); err != nil {
+		return entity.User{}, err
+	}
+
+	updatedUser, err := uc.userRepository.FindByID(user.ID)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	return updatedUser, err
 }
 
 func (uc *UserUseCase) List(query inputport.ListUsersQuery) ([]entity.User, int, *int, error) {

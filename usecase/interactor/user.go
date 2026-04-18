@@ -65,3 +65,17 @@ func (uc *UserUseCase) List(query inputport.ListUsersQuery) ([]entity.User, int,
 
 	return users, total, nextPage, nil
 }
+
+func (uc *UserUseCase) Delete(userID string) error {
+	user,err := uc.userRepository.FindByID(userID)
+	if err != nil {
+		if errors.Is(err, ErrKind.NotFound) {
+			return fmt.Errorf("%w: user not found", ErrKind.NotFound)
+		}
+		return  err
+	}
+	if err := uc.userRepository.Delete(user.ID); err != nil {
+		return err
+	}
+	return nil
+}

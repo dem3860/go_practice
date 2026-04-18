@@ -20,4 +20,5 @@ type IUserUseCase interface {
 	FindByID(userID string) (entity.User, error)
 	List(query ListUsersQuery) ([]entity.User, int, *int, error)
 	UpdateByMe(input UpdateByMeInput) (entity.User, error)
+	Delete(userID string) error
 }

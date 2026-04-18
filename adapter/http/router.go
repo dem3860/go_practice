@@ -73,6 +73,21 @@ func SetupRouter(router *http.ServeMux, deps *Deps) {
 			authMiddleware.Authenticate,
 		},
 	}, userHandler.UpdateByMe)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "delete-user",
+		Method:      http.MethodDelete,
+		Path:        "/admin/users/{userID}",
+		Summary:     "Delete user",
+		Description: "Delete a user account for administrators.",
+		Tags:        []string{"Admin"},
+		Security:    []map[string][]string{{"Bearer": {}}},
+		Middlewares: huma.Middlewares{
+			authMiddleware.Authenticate,
+			authMiddleware.RequireAdmin,
+		},
+	}, userHandler.Delete)
+
 	// ユーザ一覧
 	huma.Register(api, huma.Operation{
 		OperationID: "list-users",

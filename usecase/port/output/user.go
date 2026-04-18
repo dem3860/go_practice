@@ -17,4 +17,5 @@ type UserRepository interface {
 	FindByID(userID string) (entity.User, error)
 	FindByEmail(email string) (entity.User, error)
 	Search(query UserSearch) ([]entity.User, int, *int, error)
+	Delete(userID string) error
 }

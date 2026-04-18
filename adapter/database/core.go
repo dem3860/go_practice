@@ -57,6 +57,5 @@ func buildDSN(cfg *config.Config) string {
 func migrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&model.User{},
-		&model.Task{},
 	)
 }

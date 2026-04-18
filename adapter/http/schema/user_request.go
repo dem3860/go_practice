@@ -45,3 +45,7 @@ type UpdateByMeReqBody struct {
 type UpdateByMeReq struct {
 	Body UpdateByMeReqBody
 }
+
+type DeleteUserReq struct {
+	UserID string `path:"userID" doc:"user ID to delete" example:"01HXYZ1234567890ABCDEFGHJK"`
+}

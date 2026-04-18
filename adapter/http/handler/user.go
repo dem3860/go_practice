@@ -67,3 +67,20 @@ func (u *UserHandler) List(ctx context.Context, req *schema.ListUsersReq) (*sche
 
 	return schema.ToListUsersResponse(list, total, nextPage), nil
 }
+
+func (h *UserHandler) Delete(ctx context.Context, req *schema.DeleteUserReq) (*struct{}, error) {
+	if err := h.UserUC.Delete(req.UserID); err != nil {
+		switch {
+		case errors.Is(err, interactor.ErrKind.NotFound):
+			return nil, huma.Error404NotFound("user not found", err)
+		case errors.Is(err, interactor.ErrKind.DB):
+			return nil, huma.Error500InternalServerError("database error", err)
+		case errors.Is(err, interactor.ErrKind.InternalServerError):
+			return nil, huma.Error500InternalServerError("internal server error", err)
+		default:
+			return nil, huma.Error500InternalServerError("internal server error", err)
+		}
+	}
+
+	return nil, nil
+}

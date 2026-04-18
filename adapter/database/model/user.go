@@ -13,8 +13,6 @@ type User struct {
 	Role      string    `gorm:"type:varchar(20);not null;default:'user'" json:"role"`
 	CreatedAt time.Time `gorm:"column:created;not null" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"column:modified;not null" json:"updatedAt"`
-
-	Tasks []Task `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;" json:"tasks,omitempty"`
 }
 
 func (User) TableName() string {

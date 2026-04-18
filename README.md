@@ -5,8 +5,8 @@ Goの学習用プロジェクト
 ## 使用技術
 
 - **言語**: Go 1.22+
-- **Webフレームワーク**: [Huma](https://huma.rocks/) - 宣言的なHTTP APIフレームワーク
-- **ルーター**: Gin
+- **HTTP API**: [Huma](https://huma.rocks/) - 宣言的なHTTP APIフレームワーク
+- **サーバー基盤**: Go標準ライブラリ `net/http`
 - **データベース**: PostgreSQL
 - **ORM**: GORM
 - **認証**: bcrypt（パスワード暗号化）

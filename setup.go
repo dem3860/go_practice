@@ -8,16 +8,15 @@ import (
 	"go_practice/config"
 	"go_practice/usecase/interactor"
 	"log"
+	"net/http"
 	"time"
-
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 type App struct {
 	Config *config.Config
 	DB     *gorm.DB
-	Router *gin.Engine
+	Router *http.ServeMux
 }
 
 func NewApp() (*App, error) {
@@ -41,7 +40,7 @@ func NewApp() (*App, error) {
 
 	deps := httpadapter.NewDeps(authUC, userUC)
 
-	router := gin.Default()
+	router := http.NewServeMux()
 	httpadapter.SetupRouter(router, deps)
 
 	return &App{

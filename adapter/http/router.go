@@ -8,8 +8,7 @@ import (
 	"go_practice/usecase/port/input"
 
 	"github.com/danielgtaylor/huma/v2"
-	"github.com/danielgtaylor/huma/v2/adapters/humagin"
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2/adapters/humago"
 )
 
 // 依存関係をまとめる構造体
@@ -25,8 +24,8 @@ func NewDeps(authUseCase input.IAuthUseCase, userUseCase input.IUserUseCase) *De
 	}
 }
 
-func SetupRouter(router *gin.Engine, deps *Deps) {
-	api := humagin.New(router, huma.DefaultConfig("My API", "1.0.0"))
+func SetupRouter(router *http.ServeMux, deps *Deps) {
+	api := humago.New(router, huma.DefaultConfig("My API", "1.0.0"))
 	// ハンドラーの初期化
 	authHandler := handler.NewAuthHandler(deps.AuthUseCase)
 	userHandler := handler.NewUserHandler(deps.UserUseCase)

@@ -119,9 +119,9 @@ func (r *UserRepository) Search(query outputport.UserSearch) (_ []entity.User, t
 }
 
 func (r *UserRepository) Delete(userD string) (err error) {
-	if err :=  r.db.Model(&model.User{}).
-	Where("id = ?",userD).
-	Delete(nil).Error;err != nil {
+	if err := r.db.Model(&model.User{}).
+		Where("id = ?", userD).
+		Delete(nil).Error; err != nil {
 		return fmt.Errorf("%w: failed to delete user: %v", interactor.ErrKind.DB, err)
 	}
 	return nil

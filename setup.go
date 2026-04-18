@@ -7,10 +7,10 @@ import (
 	"go_practice/common"
 	"go_practice/config"
 	"go_practice/usecase/interactor"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"time"
-	"gorm.io/gorm"
 )
 
 type App struct {
